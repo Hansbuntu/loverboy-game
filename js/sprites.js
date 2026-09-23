@@ -46,6 +46,26 @@ export function tintedSprite(name, color) {
   return c;
 }
 
+// A solid-colour copy of a sprite's shape (used to draw a dark edge around it so it stands out from any background). Cached.
+export function silhouetteSprite(name, color) {
+  const img = sprite(name);
+  if (!img) return null;
+  const key = "sil|" + name + "|" + color;
+  let c = tinted.get(key);
+  if (!c) {
+    c = document.createElement("canvas");
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    const g = c.getContext("2d");
+    g.drawImage(img, 0, 0);
+    g.globalCompositeOperation = "source-in";   // keep only where the sprite is opaque
+    g.fillStyle = color;
+    g.fillRect(0, 0, c.width, c.height);
+    tinted.set(key, c);
+  }
+  return c;
+}
+
 // "#rrggbb" darkened (factor < 1) or lightened (> 1).
 export function shade(hex, factor) {
   const n = parseInt(hex.slice(1), 16);

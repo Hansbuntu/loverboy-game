@@ -1,7 +1,7 @@
 import { PHYSICS as P, groundYFor } from "./physics.js";
 import { Player } from "./player.js";
 import { buildCourse, unitRight, updateMovers } from "./course.js";
-import { shade, sprite, tintedSprite } from "./sprites.js";
+import { shade, silhouetteSprite, sprite, tintedSprite } from "./sprites.js";
 
 // The game itself: the runner, the level's obstacles, and drawing them in pixel-art style.
 // It knows nothing about menus or overlays; app.js drives it and listens to its hooks.
@@ -281,6 +281,7 @@ export class Runner {
   drawObstacles(ctx, L) {
     const { W, groundY, camX } = this;
     const spike = tintedSprite("spike", L.colors.obstacle);
+    const spikeEdge = silhouetteSprite("spike", shade(L.colors.obstacle, 0.18));   // dark edge, so spikes read on any background
     const tile = tintedSprite("block", L.colors.obstacle);
     const cap = tintedSprite("blockcap", L.colors.obstacle);
 
@@ -292,7 +293,10 @@ export class Runner {
       const top = bottom - o.h;
 
       if (o.kind === "spike") {
-        if (spike) ctx.drawImage(spike, l, top, r - l, o.h);
+        if (spike) {
+          if (spikeEdge) for (const [dx, dy] of [[-1, 0], [1, 0], [0, -1], [0, 1]]) ctx.drawImage(spikeEdge, l + dx, top + dy, r - l, o.h);
+          ctx.drawImage(spike, l, top, r - l, o.h);
+        }
         else {
           ctx.fillStyle = L.colors.obstacle;
           ctx.beginPath();

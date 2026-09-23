@@ -17,6 +17,9 @@ Keep pixel art crisp (no smoothing or blur). Missing images fall back to plain s
   every shape, ignores text labels, and writes the runner, obstacles and tiles at the right sizes. Add `--report` to see
   what it found without writing anything. The sheet must be a PNG in the layout from the art brief: a top row of 10
   runner frames (4 run, 2 air, 4 death) and a bottom row of 3 obstacles then 7 icons.
+- **All seven backgrounds on ONE AI image:** `npm run prep-bg -- --sheet sheet.png --favicon`. The sheet holds the panels in a grid (2 columns x 4 rows works well) separated by flat magenta gaps. Panels are read left to right, top row first, as levels 1 to 7; an 8th panel becomes the favicon (`--favicon`). Use `--start 5` when a second sheet holds levels 5 to 7. If it says it found too few panels, the panels are touching: ask the AI for wider gaps. One image also keeps all seven scenes in the same style.
+- **Level backgrounds from separate AI images:** `npm run prep-bg -- level-1.png level-2.png ...` (or `3=storm.jpg` to say which level an image is for). Any format works (PNG, WebP, JPEG). Each image is centre-cropped to 16:10, shrunk to 320x200 and reduced to a small palette with light dithering, so smooth AI art becomes crisp, consistent pixel art. Options: `--colors 48` (fewer = more stylised), `--dither 0.12` (0 to 1), `--size 640x400`, `--dry` (show what would happen, write nothing). Levels you leave out keep their current image.
+- **Favicon from an AI image:** `npm run prep-favicon -- heart.png` writes all three favicon files.
 - **Placeholder art:** `npm run art` draws any image that is missing (it never overwrites existing files). Add `--force` to
   redraw everything, for example after changing a level's colours.
 - To use a different file name for a level's background or tile, change `bg` / `tile` on that level in `js/config.js`.

@@ -8,6 +8,8 @@
     "start": "node serve.js 5174",
     "test": "node --test \"tests/*.test.js\"",
     "art": "node tools/make-art.js",
-    "prep": "node tools/prep-sheet.js"
+    "prep": "node tools/prep-sheet.js",
+    "prep-bg": "node tools/prep-backgrounds.js",
+    "prep-favicon": "node tools/prep-favicon.js"
   }
 }

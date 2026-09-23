@@ -41,11 +41,15 @@ All images are in `assets/` (see `assets/README.md` for names and sizes). Replac
 
 ```bash
 npm run prep -- sheet.png   # slice an AI-generated asset sheet into the runner, obstacles and icons
+npm run prep-bg -- --sheet sheet.png --favicon   # all 7 backgrounds (+ favicon) drawn on one AI image
+npm run prep-bg -- 1.png 2.png ...   # or from separate AI images, one per level
+npm run prep-favicon -- heart.png    # make the three favicon files from one image
 npm run art                 # draw placeholder art for anything that is missing (never overwrites)
 ```
 
-The runner, obstacles and unlock icons came from an AI sheet via `npm run prep`. The seven level backgrounds and the favicon
-are still placeholder art drawn by `npm run art`.
+All the art now comes from AI images, run through the `prep` tools: the runner, obstacles and unlock icons from one sheet (`npm run prep`),
+and the seven level backgrounds plus the favicon from another (`npm run prep-bg -- --sheet ... --favicon`).
+`npm run art` only draws placeholder art for anything that is missing.
 
 ## How the game plays
 
