@@ -1,0 +1,176 @@
+/* ---------- Fonts (self-hosted, see assets/fonts/README.md) ---------- */
+@font-face { font-family: "Pixelify Sans"; src: url("../assets/fonts/pixelify-sans-400.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Pixelify Sans"; src: url("../assets/fonts/pixelify-sans-700.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Instrument Serif"; src: url("../assets/fonts/instrument-serif-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Shrikhand"; src: url("../assets/fonts/shrikhand.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "DM Serif Display"; src: url("../assets/fonts/dm-serif-display.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+
+:root {
+  --font-pixel: "Pixelify Sans", "Courier New", monospace;      /* title, HUD, small labels */
+  --font-tagline: "Instrument Serif", Georgia, serif;           /* elegant italic */
+  --font-groovy: "Shrikhand", "Trebuchet MS", sans-serif;       /* how-to-play lines */
+  --font-song: "DM Serif Display", Georgia, serif;              /* song titles */
+  --bg: #f3f2ee; --text: #1c1c1a; --text-secondary: #5f5e5a;
+  --card-bg: #ffffff; --border: #d8d6cf; --accent: #d4537e;      /* pink accent */
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #16181c; --text: #eceae4; --text-secondary: #9a988f; --card-bg: #202226; --border: #34363a; --accent: #ed93b1; }
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--text); font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  touch-action: manipulation; overscroll-behavior-y: none; -webkit-touch-callout: none;
+}
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.wrap { max-width: 680px; margin: 0 auto; padding: 1.25rem 1rem 2rem; }
+
+/* ---------- Stage ---------- */
+.stage {
+  position: relative; width: min(100%, calc((100vh - 24px) * 1.6)); width: min(100%, calc((100dvh - 24px) * 1.6));
+  margin-inline: auto; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #1b2a44; user-select: none; -webkit-user-select: none;
+}
+.stage.shake { animation: shake 0.32s ease; }
+@keyframes shake {
+  0% { transform: translate(0, 0); } 20% { transform: translate(-6px, 2px); } 40% { transform: translate(5px, -2px); }
+  60% { transform: translate(-4px, 1px); } 80% { transform: translate(3px, -1px); } 100% { transform: translate(0, 0); }
+}
+canvas { display: block; width: 100%; height: auto; touch-action: none; image-rendering: pixelated; image-rendering: crisp-edges; }
+
+.hud {
+  position: absolute; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; padding: 10px 12px 22px;
+  font-family: var(--font-pixel); font-size: 15px; font-weight: 700; letter-spacing: 0.02em; color: #f4f2ee;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5); background: linear-gradient(rgba(0, 0, 0, 0.45), rgba(0, 0, 0, 0)); pointer-events: none;
+}
+.stage:has(.overlay:not(.hide)) .hud, .stage[data-state="reveal"] .hud { visibility: hidden; }   /* the HUD is redundant behind a card */
+
+/* ---------- Overlay: start / card / finale ---------- */
+.overlay {
+  position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; padding: 1.25rem; color: #fff; text-align: center; background: rgba(10, 10, 12, 0.66);
+}
+.overlay.hide { display: none; }
+.overlay .ov { display: none; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+.overlay[data-mode="start"] .ov-start, .overlay[data-mode="card"] .ov-card, .overlay[data-mode="finale"] .ov-finale { display: flex; }
+.overlay p, .overlay h2 { margin: 0; }
+
+.brand { font-family: var(--font-pixel); font-size: clamp(26px, 7vw, 40px); font-weight: 700; letter-spacing: 0.05em; line-height: 1.1; color: #fff; text-shadow: 3px 3px 0 var(--accent); }
+.tagline { font-family: var(--font-tagline); font-style: italic; font-size: 21px; line-height: 1.25; color: #f1ede4; max-width: 300px; }
+.howto { display: flex; flex-direction: column; align-items: center; font-family: var(--font-groovy); font-size: 17px; line-height: 1.35; letter-spacing: 0.02em; margin-top: 4px; }
+.howto span { background: linear-gradient(90deg, #ff8fb1, #ffc857); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.45)); }
+.howto span:nth-child(2) { transform: rotate(-1.5deg); }
+.begin { margin-top: 6px !important; font-family: var(--font-pixel); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(255, 255, 255, 0.8); animation: blink 1.4s steps(2, jump-none) infinite; }
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce) { .begin { animation: none; } }
+
+.card-title { font-family: var(--font-song); font-size: 27px; font-weight: 400; line-height: 1.15; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55); }
+.card-text { font-size: 13px; color: #d8d6cf; max-width: 320px; }
+
+/* ---------- Finale ---------- */
+.ov-finale { max-width: 300px; }
+.finale-col { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 100%; }
+.heart-badge { width: 76px; height: 76px; border-radius: 50%; background: var(--accent); color: #fff; display: grid; place-items: center; box-shadow: 0 8px 24px rgba(212, 83, 126, 0.4); }
+.finale-heading { font-family: var(--font-song); font-size: 26px; font-weight: 400; line-height: 1.15; }
+.finale-body { font-size: 13px; color: #d8d6cf; line-height: 1.5; max-width: 280px; }
+.finale-divider { width: 40px; height: 1px; background: rgba(255, 255, 255, 0.25); margin: 4px 0; }
+.finale-cta { font-family: var(--font-pixel); font-size: 15px; font-weight: 700; letter-spacing: 0.04em; }
+.finale-sub { font-size: 12px; color: rgba(255, 255, 255, 0.65); line-height: 1.5; max-width: 280px; margin-top: -4px !important; }
+#emailForm { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.ov-finale input[type="email"] { height: 40px; width: 100%; padding: 0 12px; font-size: 14px; color: #fff; background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.35); border-radius: 8px; }
+.ov-finale input[type="email"]::placeholder { color: rgba(255, 255, 255, 0.5); }
+.ov-finale button { height: 40px; width: 100%; font-family: var(--font-pixel); font-size: 15px; font-weight: 700; letter-spacing: 0.04em; color: #2c0d18; background: var(--accent); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 8px; cursor: pointer; }
+.ov-finale button:hover { filter: brightness(1.1); }
+.ov-finale button:disabled { opacity: 0.6; cursor: wait; }
+.ov-finale button.secondary { background: transparent; color: #fff; }
+.finale-error { display: none; font-size: 12px; color: #ffb3b3; }
+.finale-success { display: none; font-size: 13px; line-height: 1.45; color: #fff; background: rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 10px 12px; }
+
+/* ---------- The "Track unlocked" card ---------- */
+.reveal { position: absolute; inset: 0; z-index: 4; display: flex; align-items: center; justify-content: center; background: rgba(8, 8, 10, 0.78); opacity: 0; pointer-events: none; transition: opacity 0.25s ease; --glow: #8fa6d6; }
+.reveal.show { opacity: 1; pointer-events: auto; }
+.reveal-card { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 1.5rem; color: #fff; transform: scale(0.85) translateY(10px); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.3, 1.3); }
+.reveal.show .reveal-card { transform: none; }
+.reveal-art { position: relative; display: flex; align-items: center; justify-content: center; margin-bottom: 10px; }   /* room for the number badge that hangs below the tile */
+.reveal-tile { display: block; width: 128px; height: 128px; image-rendering: pixelated; filter: drop-shadow(0 0 16px var(--glow)) drop-shadow(0 8px 14px rgba(0, 0, 0, 0.5)); }
+.reveal-tile.pop { animation: pop 0.7s cubic-bezier(0.2, 0.9, 0.3, 1.35) both; }
+@keyframes pop { 0% { transform: scale(0.4) rotate(-8deg); opacity: 0; } 60% { transform: scale(1.12) rotate(3deg); opacity: 1; } 100% { transform: none; opacity: 1; } }
+.reveal-num { position: absolute; right: -10px; bottom: -8px; min-width: 30px; padding: 3px 7px; border-radius: 999px; background: rgba(8, 8, 10, 0.88); border: 1px solid var(--glow); font-family: var(--font-pixel); font-size: 13px; font-weight: 700; text-align: center; }
+.reveal-label { margin: 0; font-family: var(--font-pixel); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: rgba(255, 255, 255, 0.65); }
+.reveal-title { margin: 0; max-width: 300px; font-family: var(--font-song); font-size: 30px; font-weight: 400; line-height: 1.15; text-align: center; text-shadow: 0 2px 10px rgba(0, 0, 0, 0.55); }
+.reveal-hint { margin: 6px 0 0; font-size: 12px; color: rgba(255, 255, 255, 0.65); }
+.reveal-progress { width: 160px; height: 3px; margin-top: 10px; overflow: hidden; background: rgba(255, 255, 255, 0.22); border-radius: 2px; }
+.reveal-progress-fill { width: 0; height: 100%; background: rgba(255, 255, 255, 0.9); }
+
+/* ---------- Tracklist card ---------- */
+.panel { margin-top: 1rem; padding: 1rem 1.25rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; }
+.panel h3 { margin: 0 0 8px; font-family: var(--font-pixel); font-size: 16px; font-weight: 700; letter-spacing: 0.04em; }
+.tracks { display: flex; flex-direction: column; gap: 6px; }
+.track-row { display: flex; justify-content: space-between; padding: 6px 10px; border-radius: 8px; background: var(--bg); font-family: var(--font-song); font-size: 16px; }
+.track-row span:last-child { font-family: var(--font-pixel); font-size: 13px; }
+.track-row.locked { color: var(--text-secondary); }
+.track-row.unlocked { color: var(--accent); }
+
+/* ---------- Phones ---------- */
+@media (max-width: 640px), (max-height: 500px) {
+  .wrap { padding: max(0.5rem, env(safe-area-inset-top)) 0 calc(1.5rem + env(safe-area-inset-bottom)); }
+  .stage { border-radius: 0; border-left: 0; border-right: 0; }
+  .panel { margin: 0.75rem 0.75rem 0; padding: 0.9rem 1rem; }
+  .hud { font-size: 14px; padding: 8px 12px 18px; }
+
+  /* the start screen and the fail/intro cards stay inside the game area, so keep them compact */
+  .overlay { gap: 6px; padding: 0.75rem; }
+  .brand { font-size: 24px; text-shadow: 2px 2px 0 var(--accent); }
+  .tagline { font-size: 16px; }
+  .howto { font-size: 13px; line-height: 1.3; }
+  .begin { font-size: 11px; }
+  .card-title { font-size: 22px; }
+
+  /* the end screen and the unlock card become full-screen layers so nothing gets clipped */
+  .overlay.full, .reveal {
+    position: fixed; inset: 0; z-index: 100; height: 100vh; height: 100dvh; background: rgba(8, 8, 10, 0.95);
+    -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  }
+  .overlay.full { overflow-y: auto; -webkit-overflow-scrolling: touch; justify-content: flex-start; gap: 0; padding: calc(1.25rem + env(safe-area-inset-top)) 1.25rem calc(1.25rem + env(safe-area-inset-bottom)); }
+  .overlay.full .ov-finale { margin-block: auto; max-width: 340px; gap: 12px; }
+  .overlay.full .heart-badge { width: 68px; height: 68px; }
+  .overlay.full .finale-heading { font-size: 30px; line-height: 1.1; }
+  .overlay.full .finale-body { font-size: 15px; max-width: 300px; }
+  .overlay.full .finale-cta { font-size: 17px; }
+  .overlay.full .finale-sub { font-size: 13px; max-width: 300px; }
+  .overlay.full .ov-finale input[type="email"] { height: 48px; font-size: 16px; }   /* 16px stops iPhones zooming on focus */
+  .overlay.full .ov-finale button { height: 48px; font-size: 17px; }
+  .overlay.full .finale-error, .overlay.full .finale-success { font-size: 14px; }
+  html:has(.overlay.full), html:has(.reveal.show) { overflow: hidden; }
+
+  .reveal-card { gap: 10px; padding: calc(1.5rem + env(safe-area-inset-top)) 1.5rem calc(1.5rem + env(safe-area-inset-bottom)); }
+  .reveal-tile { width: 160px; height: 160px; }
+  .reveal-num { font-size: 15px; right: -12px; bottom: -10px; }
+  .reveal-label { font-size: 13px; }
+  .reveal-title { font-size: 34px; max-width: 320px; }
+  .reveal-hint { font-size: 14px; }
+  .reveal-progress { width: min(240px, 70vw); height: 4px; }
+}
+
+/* landscape phones: compact unlock card, and a two-column end screen so it fits one screen */
+@media (max-height: 500px) and (orientation: landscape) {
+  .reveal-card { padding-block: 0.75rem; gap: 6px; }
+  .reveal-tile { width: 88px; height: 88px; }
+  .reveal-title { font-size: 26px; }
+  .overlay.full .ov-finale { flex-direction: row; max-width: 640px; gap: 28px; align-items: center; }
+  .overlay.full .finale-col { flex: 1 1 0; gap: 10px; }
+  .overlay.full .finale-divider { width: 1px; height: 150px; margin: 0; }
+  .overlay.full .finale-heading { font-size: 26px; }
+  .overlay.full .ov-finale input[type="email"], .overlay.full .ov-finale button { height: 42px; }
+}
+
+/* portrait phones: the game takes roughly the top half, and the tracklist card fills the rest of the screen */
+@media (max-width: 640px) and (orientation: portrait) {
+  .wrap { min-height: 100vh; min-height: 100dvh; display: flex; flex-direction: column; padding-bottom: 0; }
+  .stage { flex: 0 0 auto; width: 100%; height: clamp(80vw, calc(100vh - 318px), 88vw); height: clamp(80vw, calc(100svh - 318px), 88vw); }   /* svh: stays put when the browser bar hides */
+  .stage canvas { height: 100%; }
+  .panel { flex: 1 1 auto; display: flex; flex-direction: column; margin: 8px 0 0; border-radius: 16px 16px 0 0; border-bottom: 0; padding: 0.7rem 0.9rem calc(0.7rem + env(safe-area-inset-bottom)); }
+  .panel h3 { flex: none; font-size: 15px; margin-bottom: 6px; }
+  .tracks { flex: 1 1 auto; gap: 5px; }
+  .track-row { flex: 1 1 0; min-height: 30px; align-items: center; padding: 0 10px; font-size: 15px; }
+}

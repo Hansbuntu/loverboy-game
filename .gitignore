@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+.DS_Store
+Thumbs.db
+*.log
+.claude/
+
+# local session notes (machine paths and internal commentary): not for the public repo
+SESSION_NOTES.md

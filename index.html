@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#16181c">
+<title>Loverboy O'Clock</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/icons/favicon-16.png">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch-icon.png">
+<link rel="preload" as="font" type="font/woff2" href="assets/fonts/pixelify-sans-700.woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+  <h1 class="sr" id="srTitle">Loverboy O'Clock</h1>
+
+  <div class="stage" id="stage" data-state="start">
+    <canvas id="game" width="640" height="400" aria-label="Game"></canvas>
+
+    <div class="hud" id="hud">
+      <span id="levelLabel">Level 1 of 7</span>
+      <span id="progressLabel">0 / 8</span>
+    </div>
+
+    <!-- start screen, level intro / fail card, and the end screen share this layer -->
+    <div class="overlay hide" id="overlay" data-mode="start">
+      <div class="ov ov-start">
+        <h2 class="brand" id="brandTitle">Loverboy O'Clock</h2>
+        <p class="tagline" id="brandTagline"></p>
+        <p class="howto" id="howTo"></p>
+        <p class="begin">Tap to begin</p>
+      </div>
+
+      <div class="ov ov-card">
+        <h2 class="card-title" id="cardTitle"></h2>
+        <p class="card-text" id="cardText"></p>
+      </div>
+
+      <div class="ov ov-finale">
+        <div class="finale-col">
+          <div class="heart-badge" aria-hidden="true">
+            <svg viewBox="0 0 9 8" width="36" height="32" shape-rendering="crispEdges"><path fill="currentColor" d="M1 0h2v1h1v1h1V1h1V0h2v1h1v3H8v1H7v1H6v1H5v1H4V7H3V6H2V5H1V4H0V1h1z"/></svg>
+          </div>
+          <h2 class="finale-heading">You unlocked the whole tape.</h2>
+          <p class="finale-body">Thank you for playing through it all.</p>
+        </div>
+        <div class="finale-divider"></div>
+        <div class="finale-col">
+          <p class="finale-cta">Want early access?</p>
+          <p class="finale-sub">Drop your email for the release link before it's public.</p>
+          <form id="emailForm" novalidate>
+            <input type="email" id="emailInput" placeholder="you@example.com" autocomplete="email" aria-label="Email address">
+            <p class="finale-error" id="emailError" role="alert"></p>
+            <button type="submit">Get early access</button>
+          </form>
+          <p class="finale-success" id="emailSuccess" role="status"></p>
+          <button class="secondary" id="playAgainBtn" type="button">Play again</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- the "Track unlocked" card -->
+    <div class="reveal" id="reveal">
+      <div class="reveal-card">
+        <div class="reveal-art">
+          <img class="reveal-tile" id="revealTile" alt="" src="assets/tiles/tile-01.png">
+          <span class="reveal-num" id="revealNum">01</span>
+        </div>
+        <p class="reveal-label">Track unlocked</p>
+        <h2 class="reveal-title" id="revealTitle"></h2>
+        <p class="reveal-hint">Playing a preview &middot; tap to skip</p>
+        <div class="reveal-progress"><div class="reveal-progress-fill" id="revealProgress"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>Tracklist</h3>
+    <div class="tracks" id="tracks"></div>
+  </div>
+</div>
+
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
