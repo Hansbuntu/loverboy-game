@@ -5,10 +5,13 @@ Keep pixel art crisp (no smoothing or blur). Missing images fall back to plain s
 |---|---|---|---|
 | `backgrounds/` | `level-01.png` ... `level-07.png` | 320x200 (or any 16:10 art, such as 640x400) | Shown behind the level, scaled to cover the field. The floor covers roughly the bottom 16%, so keep detail above that. The camera drifts slowly across it as you progress. |
 | `sprites/` | `run-1..8.png`, `jump.png`, `fall.png`, `death-1..4.png` | 40x40 (any size up to about 48) | The runner. Drawn at exactly this size, feet on the **bottom row**, centered, facing right. The 8 run frames are one full stride: a foot plants in front, pushes back, lifts and swings forward, then the other leg does the same. |
+| `sprites/` | `idle-1..4.png`, `win-1..3.png`, `whoa.png` | 40x40 | Extra poses: nodding to the music on the start and level screens, the victory (arms up, fist pump, heart hands), and a "whoa" after a near miss. Optional: missing ones fall back to the run frames. |
+| `obstacles/` | `spike-01..07.png` (28x28), `block-01..07.png` (22x22 tile) | | Each level's own obstacle art, in full colour (set per level as `spike` / `block` in `js/config.js`). Without them the grey `sprites/spike.png` / `block.png` are tinted instead. |
 | `source/` | `run-1..4.png` | 40x40 | The AI's original 4 run frames. `npm run prep` keeps them here and builds the 8-frame cycle from them (`tools/build-run-cycle.js`). |
 | `sprites/` | `spike.png` (28x28), `block.png` (16x16 tile), `blockcap.png` (16x5 tile) | | Obstacles. **Draw them light grey**: the game tints them to each level's `obstacle` colour. |
 | `tiles/` | `tile-01.png` ... `tile-07.png` | 32x32 | The icon on the "Track unlocked" card (shown at 4x). |
 | `icons/` | `favicon-16.png`, `favicon-32.png`, `apple-touch-icon.png` | 16, 32, 180 | Browser tab and home-screen icons. |
+| `share/` | `og-image.png` | 1200x630 | The picture shown when the link is shared. `npm run share` rebuilds it from a level background. |
 | `fonts/` | woff2 files | | See `fonts/README.md`. |
 
 ## Making the images
@@ -20,6 +23,7 @@ Keep pixel art crisp (no smoothing or blur). Missing images fall back to plain s
 - **All seven backgrounds on ONE AI image:** `npm run prep-bg -- --sheet sheet.png --favicon`. The sheet holds the panels in a grid (2 columns x 4 rows works well) separated by flat magenta gaps. Panels are read left to right, top row first, as levels 1 to 7; an 8th panel becomes the favicon (`--favicon`). Use `--start 5` when a second sheet holds levels 5 to 7. If it says it found too few panels, the panels are touching: ask the AI for wider gaps. One image also keeps all seven scenes in the same style.
 - **Level backgrounds from separate AI images:** `npm run prep-bg -- level-1.png level-2.png ...` (or `3=storm.jpg` to say which level an image is for). Any format works (PNG, WebP, JPEG). Each image is centre-cropped to 16:10, shrunk to 320x200 and reduced to a small palette with light dithering, so smooth AI art becomes crisp, consistent pixel art. Options: `--colors 48` (fewer = more stylised), `--dither 0.12` (0 to 1), `--size 640x400`, `--dry` (show what would happen, write nothing). Levels you leave out keep their current image.
 - **Favicon from an AI image:** `npm run prep-favicon -- heart.png` writes all three favicon files.
+- **Per-level obstacles and extra poses from one AI sheet:** `npm run prep-extras -- sheet.webp`. The sheet: 7 rows at the top (a spike on the left, a square wall block on the right, one row per level), and one row of 8 poses along the bottom (4 idle, 3 victory, 1 whoa), on flat magenta. It also prints where each pose's head and neck are; those go in `ANCHORS` in `js/hero.js` so the headphones and scarf sit right. Add `--report` to see what it found.
 - **Placeholder art:** `npm run art` draws any image that is missing (it never overwrites existing files). Add `--force` to
   redraw everything, for example after changing a level's colours.
 - To use a different file name for a level's background or tile, change `bg` / `tile` on that level in `js/config.js`.

@@ -10,6 +10,8 @@
     "art": "node tools/make-art.js",
     "prep": "node tools/prep-sheet.js",
     "prep-bg": "node tools/prep-backgrounds.js",
-    "prep-favicon": "node tools/prep-favicon.js"
+    "prep-favicon": "node tools/prep-favicon.js",
+    "share": "node tools/make-share.js",
+    "prep-extras": "node tools/prep-extras.js"
   }
 }

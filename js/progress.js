@@ -14,6 +14,39 @@ export function browserStorage() {
   }
 }
 
+// The bonus hearts: the most collected in each level (0-3). Saved as { "best": [3, 1, 0, ...] }.
+export function createHearts(storage, key, total, perLevel = 3) {
+  let best = load();
+
+  function load() {
+    try {
+      const raw = JSON.parse(storage?.getItem(key) ?? "null");
+      const list = Array.isArray(raw?.best) ? raw.best : [];
+      return Array.from({ length: total }, (_, i) => Math.max(0, Math.min(perLevel, Number.isInteger(list[i]) ? list[i] : 0)));
+    } catch {
+      return Array(total).fill(0);
+    }
+  }
+
+  return {
+    perLevel,
+    get: (i) => best[i] || 0,
+    get total() { return best.reduce((a, b) => a + b, 0); },
+    get max() { return total * perLevel; },
+    // keep the best; returns true if it is a new best
+    record(i, n) {
+      if (i < 0 || i >= total || n <= best[i]) return false;
+      best = best.map((v, k) => (k === i ? Math.min(perLevel, n) : v));
+      try { storage?.setItem(key, JSON.stringify({ best })); } catch { /* ignore */ }
+      return true;
+    },
+    reset() {
+      best = Array(total).fill(0);
+      try { storage?.removeItem(key); } catch { /* ignore */ }
+    }
+  };
+}
+
 export function createProgress(storage, key, total) {
   let cleared = load();
 

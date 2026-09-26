@@ -11,9 +11,12 @@ const VIBRATE = {
   tick: [8],
   pass: [26],
   fail: [45, 45, 45, 45, 45],
-  unlock: [30, 50, 30, 50, 30, 50, 160]
+  unlock: [30, 50, 30, 50, 30, 50, 160],
+  near: [6, 30, 6],
+  heart: [12, 40, 18],
+  clear: [20, 40, 20, 40, 60]
 };
-const SWITCH_TICKS = { tick: 1, pass: 2, fail: 3, unlock: 6 };
+const SWITCH_TICKS = { tick: 1, pass: 2, fail: 3, unlock: 6, near: 2, heart: 2, clear: 4 };
 
 const canVibrate = typeof navigator !== "undefined" && typeof navigator.vibrate === "function";
 let label = null;
@@ -34,7 +37,11 @@ function ensureSwitch() {
   }
 }
 
+let enabled = true;
+export function setHaptics(on) { enabled = !!on; }
+
 export function haptic(kind) {
+  if (!enabled) return;
   if (canVibrate) {
     try { navigator.vibrate(VIBRATE[kind] || 10); } catch { /* ignore */ }
     return;

@@ -162,6 +162,7 @@ export function buildCourse(level, opts = {}) {
   pits.sort((a, b) => a.left - b.left);
 
   const course = { obstacles, pits, units, goal: level.goal, speed: d.speed, move: d.move || null, slack: d.move ? d.move.amp : 0 };
+  course.hearts = placeHearts(course);
   if (opts.shiftMobile) {
     for (const u of units) {
       if (!u.mobile) continue;
@@ -171,6 +172,50 @@ export function buildCourse(level, opts = {}) {
     }
   }
   return course;
+}
+
+// Three bonus hearts per level, floating over obstacles along the way. Optional: never needed to clear.
+// Each hangs where a normal jump over that obstacle passes, a little above what you'd do anyway.
+//   { unit, dx, rise }: dx = offset from the unit's left edge; rise = px above the running surface (groundY)
+//   for the runner's centre to touch it. The runner can rise about 119 px (radius + a full leap).
+export const HEART_SPOTS = [0.3, 0.6, 0.9];
+export const HEART_REACH = 18;       // how close the runner's centre must pass to collect one
+
+export function placeHearts(course) {
+  const goal = course.units.length;
+  const used = new Set();
+  const hearts = [];
+  for (const f of HEART_SPOTS) {
+    let i = Math.min(goal - 1, Math.max(1, Math.round(goal * f) - 1));
+    while (used.has(i) && i < goal - 1) i++;
+    if (used.has(i)) continue;
+    used.add(i);
+    const u = course.units[i];
+    let top = 0;                                         // height of the tallest thing in the unit
+    let hasPit = false;
+    let platform = null;
+    for (const m of u.members) {
+      if (m.kind === "pit") { hasPit = true; continue; }
+      const h = (m.elev || 0) + m.h;
+      if (m.elev) platform = m;
+      top = Math.max(top, h);
+    }
+    const span = u.baseRight - u.baseLeft;
+    let rise;
+    if (platform) rise = platform.elev + platform.h + 15 + 30;
+    else if (top >= 70) rise = top + 15 + 16;          // tall block: just over the top of a full leap
+    else if (top > 0) rise = top + 15 + (top > 30 ? 28 : 40);
+    else rise = hasPit ? 70 : 60;
+    rise = Math.min(rise, 112);
+    hearts.push({ unit: i, dx: platform ? platform.baseLeft - u.baseLeft + platform.baseRight - platform.baseLeft - 8 : span / 2, rise });
+  }
+  return hearts;
+}
+
+// World position of a heart right now (it moves with a sliding obstacle).
+export function heartPos(course, heart, groundY) {
+  const u = course.units[heart.unit];
+  return [u.baseLeft + u.offset + heart.dx, groundY - heart.rise];
 }
 
 function applyOffset(unit) {

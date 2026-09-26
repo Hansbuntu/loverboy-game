@@ -4,16 +4,19 @@
 export const SPRITE_FILES = [
   "run-1", "run-2", "run-3", "run-4", "run-5", "run-6", "run-7", "run-8", "jump", "fall",
   "death-1", "death-2", "death-3", "death-4",
+  "idle-1", "idle-2", "idle-3", "idle-4", "win-1", "win-2", "win-3", "whoa",
   "spike", "block", "blockcap"
 ];
 
 const images = new Map();
 const tinted = new Map();
 
-export function loadSprites(folder = "assets/sprites/") {
-  for (const name of SPRITE_FILES) {
+// extra: { name: src } for images that live elsewhere (each level's obstacle skins).
+export function loadSprites(folder = "assets/sprites/", extra = {}) {
+  const all = [...SPRITE_FILES.map((name) => [name, folder + name + ".png"]), ...Object.entries(extra)];
+  for (const [name, src] of all) {
     const img = new Image();
-    img.src = folder + name + ".png";
+    img.src = src;
     images.set(name, img);
   }
 }
